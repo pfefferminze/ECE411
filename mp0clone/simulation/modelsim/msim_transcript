@@ -1,0 +1,256 @@
+# do mp0_run_msim_rtl_verilog.do 
+# if {[file exists rtl_work]} {
+# 	vdel -lib rtl_work -all
+# }
+# vlib rtl_work
+# vmap work rtl_work
+# Copying /software/altera/13.1/modelsim_ase/linuxaloem/../modelsim.ini to modelsim.ini
+# Modifying modelsim.ini
+# ** Warning: Copied /software/altera/13.1/modelsim_ase/linuxaloem/../modelsim.ini to modelsim.ini.
+#          Updated modelsim.ini.
+# 
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/lc3b_types.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package lc3b_types
+# 
+# Top level modules:
+# 	--none--
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/plus2.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module plus2
+# 
+# Top level modules:
+# 	plus2
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/register.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module register
+# 
+# Top level modules:
+# 	register
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/mux2.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module mux2
+# 
+# Top level modules:
+# 	mux2
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/adder.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module adder
+# 
+# Top level modules:
+# 	adder
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/nzp_comp.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module nzp_comp
+# 
+# Top level modules:
+# 	nzp_comp
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/adj.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package adj_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module adj
+# 
+# Top level modules:
+# 	adj
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/alu.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package alu_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module alu
+# 
+# Top level modules:
+# 	alu
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/control.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package control_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module control
+# 
+# Top level modules:
+# 	control
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/datapath.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package datapath_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module datapath
+# 
+# Top level modules:
+# 	datapath
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/gencc.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package gencc_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module gencc
+# 
+# Top level modules:
+# 	gencc
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/ir.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package ir_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module ir
+# 
+# Top level modules:
+# 	ir
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/mp0.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package mp0_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module mp0
+# 
+# Top level modules:
+# 	mp0
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/regfile.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling package regfile_sv_unit
+# -- Importing package lc3b_types
+# -- Compiling module regfile
+# 
+# Top level modules:
+# 	regfile
+# 
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/mp0_tb.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module mp0_tb
+# 
+# Top level modules:
+# 	mp0_tb
+# vlog -sv -work work +incdir+/home/njmoore3/ece411/mp0 {/home/njmoore3/ece411/mp0/magic_memory.sv}
+# Model Technology ModelSim ALTERA vlog 10.1d Compiler 2012.11 Nov  2 2012
+# -- Compiling module magic_memory
+# 
+# Top level modules:
+# 	magic_memory
+# 
+# vsim -t 1ps -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L stratixiii_ver -L rtl_work -L work -voptargs="+acc"  mp0_tb
+# vsim -L altera_ver -L lpm_ver -L sgate_ver -L altera_mf_ver -L altera_lnsim_ver -L stratixiii_ver -L rtl_work -L work -voptargs=\"+acc\" -t 1ps mp0_tb 
+# Loading sv_std.std
+# Loading work.mp0_tb
+# Loading work.lc3b_types
+# Loading work.mp0_sv_unit
+# Loading work.mp0
+# Loading work.datapath_sv_unit
+# Loading work.datapath
+# Loading work.mux2
+# Loading work.register
+# Loading work.ir_sv_unit
+# Loading work.ir
+# Loading work.adj_sv_unit
+# Loading work.adj
+# Loading work.adder
+# Loading work.regfile_sv_unit
+# Loading work.regfile
+# Loading work.gencc_sv_unit
+# Loading work.gencc
+# Loading work.nzp_comp
+# Loading work.plus2
+# Loading work.alu_sv_unit
+# Loading work.alu
+# Loading work.control_sv_unit
+# Loading work.control
+# Loading work.magic_memory
+# 
+# add wave *
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run 200 ns
+do wave.do
+restart -f; run 1000ns
+# Loading sv_std.std
+# Loading work.mp0_tb
+# Loading work.lc3b_types
+# Loading work.mp0_sv_unit
+# Loading work.mp0
+# Loading work.datapath_sv_unit
+# Loading work.datapath
+# Loading work.mux2
+# Loading work.register
+# Loading work.ir_sv_unit
+# Loading work.ir
+# Loading work.adj_sv_unit
+# Loading work.adj
+# Loading work.adder
+# Loading work.regfile_sv_unit
+# Loading work.regfile
+# Loading work.gencc_sv_unit
+# Loading work.gencc
+# Loading work.nzp_comp
+# Loading work.plus2
+# Loading work.alu_sv_unit
+# Loading work.alu
+# Loading work.control_sv_unit
+# Loading work.control
+# Loading work.magic_memory
+add wave -position insertpoint  \
+sim:/mp0_tb/clk
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/data_path/pc_out
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/data_path/mem_address
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/control_unit/mem_read
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/data_path/mem_rdata
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/control_unit/mem_write
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/control_unit/mem_byte_enable
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/data_path/mem_wdata
+add wave -position insertpoint  \
+sim:/mp0_tb/dut/data_path/rfile/data
+restart -f;run 1000ns
+# Loading sv_std.std
+# Loading work.mp0_tb
+# Loading work.lc3b_types
+# Loading work.mp0_sv_unit
+# Loading work.mp0
+# Loading work.datapath_sv_unit
+# Loading work.datapath
+# Loading work.mux2
+# Loading work.register
+# Loading work.ir_sv_unit
+# Loading work.ir
+# Loading work.adj_sv_unit
+# Loading work.adj
+# Loading work.adder
+# Loading work.regfile_sv_unit
+# Loading work.regfile
+# Loading work.gencc_sv_unit
+# Loading work.gencc
+# Loading work.nzp_comp
+# Loading work.plus2
+# Loading work.alu_sv_unit
+# Loading work.alu
+# Loading work.control_sv_unit
+# Loading work.control
+# Loading work.magic_memory
+restart -f;run 20000ns
+# Loading sv_std.std
+# Loading work.mp0_tb
+# Loading work.lc3b_types
+# Loading work.mp0_sv_unit
+# Loading work.mp0
+# Loading work.datapath_sv_unit
+# Loading work.datapath
+# Loading work.mux2
+# Loading work.register
+# Loading work.ir_sv_unit
+# Loading work.ir
+# Loading work.adj_sv_unit
+# Loading work.adj
+# Loading work.adder
+# Loading work.regfile_sv_unit
+# Loading work.regfile
+# Loading work.gencc_sv_unit
+# Loading work.gencc
+# Loading work.nzp_comp
+# Loading work.plus2
+# Loading work.alu_sv_unit
+# Loading work.alu
+# Loading work.control_sv_unit
+# Loading work.control
+# Loading work.magic_memory
