@@ -1,0 +1,22 @@
+transcript on
+if {[file exists rtl_work]} {
+	vdel -lib rtl_work -all
+}
+vlib rtl_work
+vmap work rtl_work
+
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/register.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/plus2.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/nzp_comp.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/mux2.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/lc3b_types.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/adder.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/regfile.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/mp1.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/ir.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/gencc.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/datapath.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/control.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/alu.sv}
+vlog -sv -work work +incdir+/home/gus/work/ece411/mp0/ECE411/mp1 {/home/gus/work/ece411/mp0/ECE411/mp1/adj.sv}
+
