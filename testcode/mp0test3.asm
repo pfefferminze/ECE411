@@ -70,6 +70,7 @@ BRp OUTERLOOP
 
 FINISH:
 ;store the final value (R6)
+ADD R6,R3,R0
 STR R6, R0,ANSWER 
 
 ;continuously branch back to itself
