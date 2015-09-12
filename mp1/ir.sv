@@ -9,6 +9,7 @@ module ir
     output lc3b_reg dest, src1, src2,
     output lc3b_offset6 offset6,
     output lc3b_offset9 offset9,
+    output lc3b_immed5 immed5,
     output logic addand_immed
 );
 
@@ -33,6 +34,7 @@ begin
     offset6 = data[5:0];
     offset9 = data[8:0];
     addand_immed = data[5];
+	 immed5 = data[4:0];
 end
 
 endmodule : ir

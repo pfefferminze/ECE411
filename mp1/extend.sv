@@ -1,12 +1,12 @@
 import lc3b_types::*;
 
-module extend #(parameter outwidth = 16,inwidth=5)
+module extend
 (
-	input [inwidth-1:0] in,
-	output[outwidth-1:0] out
+	input [4:0] in,
+	output lc3b_word out
 );
 
-	assign out = $signed(in);
+	assign out = $signed({in});
 
 endmodule
 

@@ -6,7 +6,7 @@ module control
 	  input clk,
     
 	 /*datapath control signals */
-    output logic pcmux_sel,
+    output logic [1:0] pcmux_sel,
     output logic load_pc,
 	 output logic storemux_sel,
 	 output logic load_ir,
@@ -15,13 +15,14 @@ module control
 	 output logic mdrmux_sel,
 	 output logic load_mdr,
 	 output logic load_regfile,
-	 output logic alumux_sel,
+	 output logic [1:0] alumux_sel,
 	 output lc3b_aluop alu_op,
-	 output logic regfilemux_sel,
+	 output logic [1:0] regfilemux_sel,
 	 output logic load_cc,
 	 input lc3b_opcode opcode,
 	 input br_en,
-    
+	 input addand_immed,
+
 	 /* memory signals */
 	 input mem_resp,
 	 output logic mem_read,
@@ -31,20 +32,22 @@ module control
 
 enum int unsigned {
     /* List of states */
-	 fetch1,
-	 fetch2,
-	 fetch3,
-	 decode,
-	 s_add,
-	 s_and,
-	 s_not,
-	 br,
-	 br_taken,
-	 calc_addr,
-	 ldr1,
-	 ldr2,
-	 str1,
-	 str2
+	fetch1,
+	fetch2,
+	fetch3,
+	decode,
+	s_add,
+	s_and,
+	s_not,
+	br,
+	br_taken,
+	calc_addr,
+	ldr1,
+	ldr2,
+	str1,
+	str2,
+	s_lea,
+	s_jmp
 } state, next_state;
 
 always_comb
@@ -56,10 +59,10 @@ begin : state_actions
 	 load_mar = 1'b0;
 	 load_mdr = 1'b0;
 	 load_cc = 1'b0;
-	 pcmux_sel = 1'b0;
+	 pcmux_sel = 2'b00;
 	 storemux_sel = 1'b0;
-	 alumux_sel = 1'b0;
-	 regfilemux_sel = 1'b0;
+	 alumux_sel = 2'b00;
+	 regfilemux_sel = 2'b00;
 	 marmux_sel = 1'b0;
 	 mdrmux_sel = 1'b0;
 	 alu_op = alu_add;
@@ -98,6 +101,7 @@ begin : state_actions
 			alu_op = alu_add;
 			load_regfile = 1;
 			load_cc = 1;
+			if (addand_immed == 1'b1) alumux_sel = 2'b10;
 		end
 		
 		s_not: begin
@@ -112,6 +116,7 @@ begin : state_actions
 			alu_op = alu_and;
 			load_regfile = 1;
 			load_cc = 1;
+			if (addand_immed == 1'b1) alumux_sel = 2'b10;
 		end
 		
 		br: begin
@@ -121,13 +126,13 @@ begin : state_actions
 		
 		br_taken: begin
 			//PC<= PC + SEXT(IR[8:0] << 1)
-			pcmux_sel = 1;
+			pcmux_sel = 2'b01;
 			load_pc = 1;
 		end
 		
 		calc_addr: begin
 			//MAR <= SRA + SEXT(IR[5:0] << 1)
-			alumux_sel = 1;
+			alumux_sel = 2'b01;
 			alu_op = alu_add;
 			load_mar = 1;
 		end
@@ -141,7 +146,7 @@ begin : state_actions
 		
 		ldr2: begin
 			//DR <= MDR
-			regfilemux_sel = 1;
+			regfilemux_sel = 2'b01;
 			load_regfile = 1;
 			load_cc = 1;
 		end
@@ -158,6 +163,19 @@ begin : state_actions
 			mem_write = 1;
 		end
 		
+		s_lea: begin
+			//DR <= PC + (SEXT(PCoffset9)<<1)
+			regfilemux_sel = 2'b10;
+			load_regfile = 1;
+			load_cc = 1;
+		end
+
+		s_jmp:	begin
+			//PC <= BaseR (sr2_out)
+			pcmux_sel = 2'b10;
+			load_pc = 1;
+		end
+
 		default: ;//do nothing]
 	endcase
 end : state_actions
@@ -201,6 +219,10 @@ begin : next_state_logic
 				op_str: begin
 					next_state = calc_addr;
 				end
+				op_lea:	next_state = s_lea; 
+
+				op_jmp: next_state = s_jmp;
+
 				default: ; //nothing
 			endcase	
 		end
@@ -244,6 +266,14 @@ begin : next_state_logic
 				next_state = fetch1;
 		end
 		br_taken: begin 
+			next_state = fetch1;
+		end
+		
+		s_lea:	begin
+			next_state = fetch1;
+		end
+		
+		s_jmp:	begin
 			next_state = fetch1;
 		end
 	endcase

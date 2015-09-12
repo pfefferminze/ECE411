@@ -14,7 +14,7 @@ module mp1
     output lc3b_word mem_wdata
 );
 
-logic pcmux_sel;
+logic [1:0] pcmux_sel;
 logic load_pc;
 logic storemux_sel;
 logic load_ir;
@@ -23,10 +23,11 @@ logic load_mar;
 logic mdrmux_sel;
 logic load_mdr;
 logic load_regfile;
-logic alumux_sel;
-logic regfilemux_sel;
+logic [1:0] alumux_sel;
+logic [1:0] regfilemux_sel;
 logic load_cc;
 logic br_en;
+logic addand_immed;
 
 lc3b_aluop alu_op;
 lc3b_opcode opcode;
@@ -50,7 +51,8 @@ datapath data_path(
 	.mem_rdata(mem_rdata),
 	.mem_address(mem_address),
 	.mem_wdata(mem_wdata),
-	.opcode(opcode)
+	.opcode(opcode),
+	.addand_immed(addand_immed)
 );
 control control_unit(
 	.clk(clk),
@@ -72,6 +74,7 @@ control control_unit(
 	.mem_resp(mem_resp),
 	.mem_read(mem_read),
 	.mem_write(mem_write),
-	.mem_byte_enable(mem_byte_enable)
+	.mem_byte_enable(mem_byte_enable),
+	.addand_immed(addand_immed)
 );
 endmodule : mp1

@@ -4,7 +4,7 @@ module datapath
 (
     input clk,
     /* control signals */
-    input pcmux_sel,
+    input [1:0] pcmux_sel,
     input load_pc,
 	 input storemux_sel,
 	 input load_ir,
@@ -13,16 +13,17 @@ module datapath
 	 input mdrmux_sel,
 	 input load_mdr,
 	 input load_regfile,
-	 input alumux_sel,
+	 input [1:0] alumux_sel,
 	 input lc3b_aluop alu_op,
-	 input regfilemux_sel,
+	 input [1:0] regfilemux_sel,
 	 input load_cc,
  	 output br_en, 
     /* declare more ports here */
 	 input lc3b_word mem_rdata,
 	 output lc3b_word mem_address,
 	 output lc3b_word mem_wdata,
-	 output lc3b_opcode opcode
+	 output lc3b_opcode opcode,
+	 output logic addand_immed
 );
 
 /* declare internal signals */
@@ -39,6 +40,7 @@ lc3b_word alu_out;
 lc3b_word marmux_out;
 lc3b_word mdrmux_out;
 lc3b_word alumux_out;
+lc3b_word immed5_extension_out;
 
 lc3b_reg sr1, sr2, dest, storemux_out, cc_out;
 
@@ -46,18 +48,19 @@ lc3b_offset9 offset9;
 lc3b_offset6 offset6;
 
 lc3b_nzp gencc_out;
-
+lc3b_immed5 immed5; 
 
 
 /*
  * PC
  */
-mux2 pcmux
+mux3 pcmux
 (
-    .sel(pcmux_sel),
-    .a(pc_plus2_out),
-    .b(br_add_out),
-    .f(pcmux_out)
+	.sel(pcmux_sel),
+	.a(pc_plus2_out),
+	.b(br_add_out),
+	.c(sr1_out),
+	.f(pcmux_out)
 );
 
 mux2 #(.width(3)) storemux
@@ -80,15 +83,23 @@ register pc
 
 ir ir_unit
 (
-    .clk(clk),
-    .load(load_ir),
-    .in(mdr_out),
-    .opcode(opcode),
-	 .dest(dest),
-	 .src1(sr1),
-	 .src2(sr2),
-	 .offset6(offset6),
-	 .offset9(offset9)
+	.clk(clk),
+	.load(load_ir),
+	.in(mdr_out),
+	.opcode(opcode),
+	.dest(dest),
+	.src1(sr1),
+	.src2(sr2),
+	.offset6(offset6),
+	.offset9(offset9),
+	.addand_immed(addand_immed),
+	.immed5(immed5)  
+);
+
+extend immed5_extension
+(
+	.in(immed5),
+	.out(immed5_extension_out)
 );
 
 adj #(.width(9)) adj9
@@ -123,12 +134,13 @@ regfile rfile
 	.reg_b(sr2_out)
 );
 
-mux2 regfilemux
+mux3 regfilemux
 (
-    .sel(regfilemux_sel),
-    .a(alu_out),
-    .b(mdr_out),
-    .f(regfilemux_out)
+	.sel(regfilemux_sel),
+	.a(alu_out),
+	.b(mdr_out),
+	.c(br_add_out),
+	.f(regfilemux_out)
 );
 
 mux2 mdrmux
@@ -196,12 +208,13 @@ plus2 plus_2
 	.out(pc_plus2_out)
 );
 
-mux2 alumux
+mux3 alumux
 (
-    .sel(alumux_sel),
-    .a(sr2_out),
-    .b(adj6_out),
-    .f(alumux_out)
+	.sel(alumux_sel),
+	.a(sr2_out),
+	.b(adj6_out),
+	.c(immed5_extension_out),
+	.f(alumux_out)
 );
 
 alu alu_unit
