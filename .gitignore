@@ -1,0 +1,5 @@
+mp1/db/*
+mp1/incremental_db/*
+mp1/simulation
+mp1/*.rpt
+mp1/*.summary
