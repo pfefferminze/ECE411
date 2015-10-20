@@ -3,3 +3,7 @@ mp1/incremental_db/*
 mp1/simulation
 mp1/*.rpt
 mp1/*.summary
+mp0/*.jpg
+mp0/*.xcf
+mp0/*.ps
+mp0/*.txt
