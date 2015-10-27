@@ -1,0 +1,12 @@
+mp1/db/*
+mp1/incremental_db/*
+mp1/simulation
+mp1/*.rpt
+mp1/*.summary
+mp0/*.jpg
+mp0/*.xcf
+mp0/*.ps
+mp0/*.txt
+mp0/*~
+mp1/*~
+mp0/simulation
