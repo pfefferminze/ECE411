@@ -2,49 +2,54 @@
 //####################################################################
 //####################################################################
 //################ Created by Nick Moore  ############################
-//################  for MP2 in ECE 411 at ############################
+//################  for group Random2 for ############################
+//################  MP3 in ECE 411 at     ############################
 //################ University of Illinois ############################
 //################ Fall 2015              ############################
 //####################################################################
 //####################################################################
 //####################################################################
 //#                                                                  #
-//#   cache_datapath.sv                                              #
+//#   cache_datapath_alternate.sv                                    #
 //#     Implements the datapath module for the LC3B cache            #
 //#     controlled by the control module for the LC3B cache          #
 //#     instantiate both in cache.sv and connect the inputs/outputs  #
-//#                                                                  #
+//#   alternate version is developed to clean up the cache code      #
+//#     and make it easier to build larger caches in other projects  #
 //####################################################################
 
+import cache_types::*;
 import lc3b_types::*;
 
-module cache_datapath
-(
-	//signals between cache and cpu datapath
-	input lc3b_word mem_address,
-	input lc3b_word mem_wdata,
-	input [1:0] mem_byte_enable,
-	output lc3b_word mem_rdata,
+module cache_datapath (
+					   //signals between cache and cpu datapath
+					   input 			  lc3b_word mem_address,
+					   input 			  lc3b_word mem_wdata,
+					   input [1:0] 		  mem_byte_enable,
+					   output 			  lc3b_word mem_rdata,
+					   output 			  lc3b_word pmem_address,
 
-	//signals between cache and physical memory
-	input cache_line pmem_rdata,
-	output cache_line pmem_wdata,
+					   //signals between cache and physical memory
+					   input 			  cache_line pmem_rdata,
+					   output 			  cache_line pmem_wdata,
 
-	//signals between cache datapath and cache controller
-	input clk,
-	input valid_data,
-	input dirty_data,
-	input write1, write0,
-	input pmem_wdatamux_sel,		//mux selects
-	input datainmux1_sel, datainmux0_sel,	//mux selects
-	output logic isValid1, isValid0,
-	output logic isHit1, isHit0,		//logic determining if there was a hit
-	output logic isDirty1, isDirty0,
-	output cache_index index_out,
-	output cache_tag tag_out,
-	output cache_tag [1:0] tags,
-	output cache_offset offset_out
-);
+					   //signals between cache datapath and cache controller
+					   input 			  clk,
+					   input 			  valid_data,
+					   input 			  dirty_data,
+					   input [1:0] 		  write,
+					   input 			  pmem_wdatamux_sel, //mux selects
+					   input 			  basemux_sel,
+					   input 			  pmem_address_mux_sel,
+					   input [1:0]		  datainmux_sel,
+					   output logic [1:0] Valid,
+					   output logic [1:0] Hit, //logic determining if there was a hit
+					   output logic [1:0] Dirty
+//					   output 			  cache_index index_out,
+//					   output 			  cache_tag tag_out,
+//					   output 			  cache_tag [1:0] tags,
+//					   output 			  cache_offset offset_out
+					   );
 
 //#############################################################################################################
 //#############################################################################################################
@@ -62,20 +67,14 @@ module cache_datapath
 cache_index index;				//set select stripped off of mem_address
 cache_offset offset;				//word select stripped off of mem_address
 cache_tag tag;					//set tag stripped off of mem_address
-cache_line datainmux1_out, datainmux0_out;	//logic entering set ways
-cache_line way1_out, way0_out;			//logic exiting set ways
-cache_tag tag1_out, tag0_out;			//logic outputs from tag arrays
 cache_line dataoutmux_out;			//connects dataoutmux to wordselectmux
-cache_line blender1_out, blender0_out;		//outputs from the blenders to the datainmuxes
-
-
-logic valid1_out, valid0_out;		//logic outputs from valid arrays
-logic tagcompare1_out, tagcompare0_out;	//logic checking for tag hits
-logic hitcheck1, hitcheck0;		//logic determining if each array has a hit
-logic [7:0] decoder1_out, decoder0_out;	//logic from decoder as mux select lines in blender
-
+cache_line [1:0] line_out;
+logic [1:0] isHit, isValid, isDirty;
 logic dataoutmux_sel;			//select line from dataoutmux -- controlled by combinational logic
-
+pmem_address_base [1:0] pmem_base;
+pmem_address_base basemux_out;     //msb array to assign pmem_address in the case of a writeback
+lc3b_word wb_address;
+   
 //#############################################################################################################
 //#############################################################################################################
 //#############################################################################################################
@@ -89,28 +88,21 @@ logic dataoutmux_sel;			//select line from dataoutmux -- controlled by combinati
 //#############################################################################################################
 //#############################################################################################################
 
-assign isValid1 = valid1_out;
-assign isValid0 = valid0_out;
+assign wb_address = {basemux_out, 4'h0};
 assign index = mem_address[6:4];
-assign index_out = index;
 assign offset = mem_address[3:1];
 assign tag = mem_address[15:7];
-assign tag_out = tag;
-assign isHit1 = hitcheck1;
-assign isHit0 = hitcheck0;
-assign hitcheck1 = valid1_out & tagcompare1_out;
-assign hitcheck0 = valid0_out & tagcompare0_out;
-assign dataoutmux_sel = hitcheck1;
-assign tags[1] = tag1_out;
-assign tags[0] = tag0_out;
-assign offset_out = offset;
-
+assign Hit = isHit;
+assign Valid = isValid;
+assign Dirty = isDirty;
+assign dataoutmux_sel = isHit[1];
+      
 //#############################################################################################################
 //#############################################################################################################
 //#############################################################################################################
 //############################                                                 ################################
 //############################                                                 ################################
-//############################              Associativity Ways                 ################################
+//############################              Module Instantiations              ################################
 //############################                                                 ################################
 //############################                                                 ################################
 //############################                                                 ################################
@@ -118,148 +110,82 @@ assign offset_out = offset;
 //#############################################################################################################
 //#############################################################################################################
 
-array way1 
+/*ways
+*/ 
+cache_way way0    (
+				   //signals between cache and cpu datapath
+				   .mem_wdata(mem_wdata),
+				   .mem_byte_enable(mem_byte_enable),
+				  
+				  //signals between cache and physical memory
+				   .line_in(pmem_rdata),
+ 				   .line_out(line_out[0]),
+				   .pmem_base(pmem_base[0]),
+
+				  //signals between cache datapath and cache controller
+				   .clk(clk),
+				   .valid_data(valid_data),
+				   .dirty_data(dirty_data),
+				   .write(write[0]),
+				   .datainmux_sel(datainmux_sel[0]), //selection signal for the mux that feeds the cache line array
+				   .isValid(isValid[0]),
+				   .isHit(isHit[0]),
+				   .isDirty(isDirty[0]),
+
+				  //signals from the parent module
+				   .tag(tag),
+				   .offset(offset),
+				   .index(index)
+ 				   );
+
+cache_way way1    (
+				   //signals between cache and cpu datapath
+				   .mem_wdata(mem_wdata),
+				   .mem_byte_enable(mem_byte_enable),
+				  
+				  //signals between cache and physical memory
+				   .line_in(pmem_rdata),
+				   .line_out(line_out[1]),
+				   .pmem_base(pmem_base[1]),
+
+				  //signals between cache datapath and cache controller
+				   .clk(clk),
+				   .valid_data(valid_data),
+				   .dirty_data(dirty_data),
+				   .write(write[1]),
+				   .datainmux_sel(datainmux_sel[1]), //selection signal for the mux that feeds the cache line array
+				   .isValid(isValid[1]),
+				   .isHit(isHit[1]),
+				   .isDirty(isDirty[1]),
+
+				  //signals from the parent module
+				   .tag(tag),
+				   .offset(offset),
+				   .index(index)
+				   );
+
+
+mux2 #(.width(16)) pmem_address_mux
 (
-    .clk(clk),
-    .write(write1),
-    .index(index),
-    .datain(datainmux1_out),
-    .dataout(way1_out)
+	.a(mem_address),
+	.b(wb_address),
+	.sel(pmem_address_mux_sel),
+	.f(pmem_address)
+);
+   
+mux2 #(.width(12)) basemux
+(
+	.a(pmem_base[0]),
+	.b(pmem_base[1]),
+	.sel(basemux_sel),
+	.f(basemux_out)
 );
 
-array way0
-(
-    .clk(clk),
-    .write(write0),
-    .index(index),
-    .datain(datainmux0_out),
-    .dataout(way0_out)
-);
-
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################               Tag Arrays                        ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-
-array #(.width(9)) tag1
-(
-    .clk(clk),
-    .write(write1),
-    .index(index),
-    .datain(tag),
-    .dataout(tag1_out)
-);
-
-array #(.width(9)) tag0
-(
-    .clk(clk),
-    .write(write0),
-    .index(index),
-    .datain(tag),
-    .dataout(tag0_out)
-);
-
-compare tagcompare0
-(
-	.tag_a(tag0_out),
-	.tag_b(tag),
-	.isEqual(tagcompare0_out)
-);
-
-compare tagcompare1
-(
-	.tag_a(tag1_out),
-	.tag_b(tag),
-	.isEqual(tagcompare1_out)
-);
-
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################               Validity Check Arrays             ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-
-array #(.width(1)) valid1
-(
-    .clk(clk),
-    .write(write1),
-    .index(index),
-    .datain(valid_data),
-    .dataout(valid1_out)
-);
-
-array #(.width(1)) valid0
-(
-    .clk(clk),
-    .write(write0),
-    .index(index),
-    .datain(valid_data),
-    .dataout(valid0_out)
-);
-
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################               Dirty Bit Arrays                  ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-
-array #(.width(1)) dirty1
-(
-    .clk(clk),
-    .write(write1),
-    .index(index),
-    .datain(dirty_data),
-    .dataout(isDirty1)
-);
-
-array #(.width(1)) dirty0
-(
-    .clk(clk),
-    .write(write0),
-    .index(index),
-    .datain(dirty_data),
-    .dataout(isDirty0)
-);
-
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                  Multiplexors                   ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-
+   
 mux2 #(.width(128)) dataoutmux
 (
-	.a(way0_out),
-	.b(way1_out),
+	.a(line_out[0]),
+	.b(line_out[1]),
 	.sel(dataoutmux_sel),
 	.f(dataoutmux_out)
 );
@@ -280,57 +206,11 @@ mux8  wordselectmux
 
 mux2 #(.width(128)) pmem_wdatamux
 (
-	.a(way0_out),
-	.b(way1_out),
+	.a(line_out[0]),
+	.b(line_out[1]),
 	.sel(pmem_wdatamux_sel),
 	.f(pmem_wdata)
 );
 
-mux2 #(.width(128)) datainmux1
-(
-	.a(blender1_out),
-	.b(pmem_rdata),
-	.sel(datainmux1_sel),
-	.f(datainmux1_out)
-);
 
-mux2 #(.width(128)) datainmux0
-(
-	.a(blender0_out),
-	.b(pmem_rdata),
-	.sel(datainmux0_sel),
-	.f(datainmux0_out)
-);
-
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-//############################                                                 ################################
-//############################                                                 ################################
-//############################                     Blender                     ################################
-//############################                (made from multiplexors)         ################################
-//############################                                                 ################################
-//############################                                                 ################################
-//#############################################################################################################
-//#############################################################################################################
-//#############################################################################################################
-
-blender blender0
-(
-	.in_line(way0_out),
-	.offset(offset),
-	.mem_byte_enable(mem_byte_enable),
-	.data(mem_wdata),
-	.out_line(blender0_out)
-);
-
-blender blender1
-(
-	.in_line(way1_out),
-	.offset(offset),
-	.mem_byte_enable(mem_byte_enable),
-	.data(mem_wdata),
-	.out_line(blender1_out)
-);
-
-endmodule : cache_datapath
+endmodule // cache_datapath

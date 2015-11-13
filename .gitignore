@@ -10,3 +10,12 @@ mp0/*.txt
 mp0/*~
 mp1/*~
 mp0/simulation
+mp1/*.txt
+mp1/*.jpg
+mp1/*.xcf
+mp1/*.smsg
+mp1/*.jdi
+mp1/*.pin
+mp1/*.bak
+mp1/*~
+mp1/*.ps

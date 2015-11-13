@@ -20,7 +20,7 @@
 //####################################################################
 
 import lc3b_types::*;
-
+import cache_types::*;
 module compare 
 (
 	input cache_tag tag_a, tag_b,

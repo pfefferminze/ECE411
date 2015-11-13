@@ -22,6 +22,7 @@
 //####################################################################
 
 import lc3b_types::*;
+import cache_types::*;
 
 module blender
 (

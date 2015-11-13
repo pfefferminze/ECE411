@@ -9,13 +9,14 @@
 //####################################################################
 //####################################################################
 //#                                                                  #
-//#   cache_control.sv                                               #
+//#   cache_control_alternate.sv                                     #
 //#     Implements the control module for the LC3B cache             #
 //#     controls the datapath module for the LC3B cache              #
 //#     instantiate both in cache.sv and connect the inputs/outputs  #
 //#                                                                  #
 //####################################################################
 
+import cache_types::*;
 import lc3b_types::*;
 
 module cache_control
@@ -24,7 +25,6 @@ module cache_control
 	input mem_read,
 	input mem_write,
 	output logic mem_resp,
-	input lc3b_word mem_address,
 
 	//signals between cache and physical memory
 	output logic pmem_read,
@@ -35,19 +35,16 @@ module cache_control
 	input clk,
 	output logic valid_data,
 	output logic dirty_data,
-	output logic write1, write0,
+	output logic [1:0] write,
 	output logic pmem_wdatamux_sel,		//mux selects
-	output logic datainmux1_sel, datainmux0_sel,	//mux selects
-	input cache_tag tag,
+	output logic [1:0] datainmux_sel,	//mux selects
+    output logic  pmem_address_mux_sel,
+    output logic basemux_sel,
+//	input cache_tag tag,
 	input cache_index index,
-	input isValid1, isValid0,
-	input isHit1, isHit0,		//logic determining if there was a hit
-	input isDirty1,isDirty0,
-	input cache_tag [1:0] tags,
-	input cache_offset offset,
-	output logic [15:0] pmem_address
-
-
+	input [1:0] Valid,
+	input [1:0] Hit,		//logic determining if there was a hit
+	input [1:0] Dirty
 );
 
 //#############################################################################################################
@@ -66,11 +63,6 @@ module cache_control
 enum {READY, WRITE_BACK, GET_MEM,GET_MEM_2} state, next_state;
 //logic isFull;
 logic lru_in,lru_out,lru_write;
-logic [1:0] dirty;
-logic [1:0] write;
-logic [1:0] valid;
-logic [1:0] hit;
-logic [1:0] datain_sel;
 logic recipient;	//the associativity way to write to in the event of a cache miss 
 
 //#############################################################################################################
@@ -86,23 +78,12 @@ logic recipient;	//the associativity way to write to in the event of a cache mis
 //#############################################################################################################
 //#############################################################################################################
 
-//assign isFull = (isValid1 == 1 && isValid0 == 1);
-assign dirty[1] = isDirty1;
-assign dirty[0] = isDirty0;
-assign valid[1] = isValid1;
-assign valid[0] = isValid0;
-assign hit[1] = isHit1;
-assign hit[0] = isHit0;
-assign write1 = write[1];
-assign write0 = write[0];
-assign datainmux1_sel = datain_sel[1];
-assign datainmux0_sel = datain_sel[0];
 
 always_comb begin : recipient_determination
 	
-	if (valid[0] == 1'b0)
+	if (Valid[0] == 1'b0)
 		recipient = 1'b0;
-	else if (valid[1] == 1'b0)
+	else if (Valid[1] == 1'b0)
 		recipient = 1'b1;
 	else if (lru_out == 1'b0)
 		recipient = 1'b0;
@@ -151,8 +132,8 @@ always_ff @ (posedge clk) state <= next_state;
 always_comb begin : next_state_logic
 	case (state)
 		READY: begin
-			if (((mem_read == 1 && mem_write == 0) || (mem_read == 0 && mem_write == 1)) && !(hit[1] == 1'b1 || hit[0] == 1'b1)) begin
-				if (dirty[recipient] == 1) begin
+			if (((mem_read == 1 && mem_write == 0) || (mem_read == 0 && mem_write == 1)) && !(Hit[1] == 1'b1 || Hit[0] == 1'b1)) begin
+				if (Dirty[recipient] == 1) begin
 					next_state = WRITE_BACK;
 				end
 				else begin
@@ -205,24 +186,25 @@ always_comb begin : state_control_signals
 	dirty_data = 1'b0;
 	write = 2'b00;
 	pmem_wdatamux_sel = 1'b0;
-	datain_sel = 2'b00;
+	datainmux_sel = 2'b00;
 	lru_in = 1'b0;
 	lru_write = 1'b0;
-	pmem_address = mem_address;
-
-	case (state) 
+    basemux_sel = recipient;
+    pmem_address_mux_sel = 1'b0;
+   	case (state) 
 		READY:	begin
 			//if there's a hit and mem_write is high, write to
 			//the correct way and respond
 			//if there is a hit and mem_write is not high, respond
-			if (hit[1] == 1'b1 || hit[0] == 1'b1) begin
+			if (Hit[1] == 1'b1 || Hit[0] == 1'b1) begin
 				if (mem_write == 1'b1) begin
 					//write the data
 					dirty_data = 1'b1;
-					write[hit[1]] = 1'b1;
+					write[Hit[1]] = 1'b1;
+					valid_data = 1'b1;
 
 					//set the LRU
-					lru_in = ~hit[1];
+					lru_in = ~Hit[1];
 					lru_write = 1'b1;
 
 					//respond to cpu
@@ -230,7 +212,7 @@ always_comb begin : state_control_signals
 				end
 				if (mem_read == 1'b1) begin
 					//set the LRU
-					lru_in = ~hit[1];
+					lru_in = ~Hit[1];
 					lru_write = 1'b1;
 
 					//respond to cpu, as read logic is automatic
@@ -242,7 +224,7 @@ always_comb begin : state_control_signals
 		WRITE_BACK: begin
 				pmem_wdatamux_sel = recipient;
 				pmem_write = 1'b1;
-				pmem_address = {tags[recipient],index,offset,1'b0};
+		        pmem_address_mux_sel = 1'b1;
 		end
 
 		GET_MEM: begin
@@ -250,7 +232,7 @@ always_comb begin : state_control_signals
 		end
 
 		GET_MEM_2:	begin
-			datain_sel[recipient] = 1'b1;
+			datainmux_sel[recipient] = 1'b1;
 			write[recipient] = 1'b1;
 			valid_data = 1'b1;
 		end	

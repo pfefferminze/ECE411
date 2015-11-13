@@ -14,12 +14,6 @@ typedef logic  [2:0] lc3b_nzp;
 typedef logic  [1:0] lc3b_mem_wmask;
 typedef logic  [7:0] lc3b_trapvect8;
 
-typedef logic  [2:0] cache_offset;
-typedef logic  [2:0] cache_index;
-typedef logic  [8:0] cache_tag;
-
-typedef logic [7:0] [15:0] cache_line; 
-
 typedef enum bit [3:0] {
     op_add  = 4'b0001,
     op_and  = 4'b0101,

@@ -20,7 +20,7 @@
 //#     outputs 8 different bits to act as 8 different mux sel lines #
 //####################################################################
 
-import lc3b_types::*;
+import cache_types::*;
 
 module decoder
 (

@@ -24,6 +24,7 @@
 
 
 import lc3b_types::*;
+import cache_types::*;
 
 module array #(parameter width = 128)
 (
