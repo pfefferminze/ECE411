@@ -99,8 +99,6 @@ always_ff @(posedge clk) begin
 end // always_ff @
    
 
-assign out = data[index][7];
+assign out = data[index][7][2:0];
    
-
-
 endmodule // LRU_unit
