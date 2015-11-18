@@ -19,7 +19,7 @@
 import cache_types::*;
 import lc3b_types::*;
 
-module cache_control
+module L2cache_control
 (
 	//signals between cache and cpu datapath
 	input mem_read,
@@ -61,7 +61,7 @@ module cache_control
 //#############################################################################################################
 
    enum 		{READY, WRITE_BACK, GET_MEM,GET_MEM_2} state, next_state;
-   logic lru_out;
+   logic [2:0] lru_out;
    logic [2:0] inter_hit;     //used for converting the Hit aray to an index in assigning write[]
    logic [2:0] recipient;	//the associativity way to write to in the event of a cache miss 
 
@@ -79,12 +79,12 @@ module cache_control
 //#############################################################################################################
 
 always_comb begin : inter_hit_assignment
-   case(hit)
+   case(Hit)
 	 8'h1: inter_hit = 3'h0;
 	 8'h2: inter_hit = 3'h1;
 	 8'h4: inter_hit = 3'h2;
 	 8'h8: inter_hit = 3'h3;
-	 8'10: inter_hit = 3'h4;
+	 8'h10: inter_hit = 3'h4;
 	 8'h20: inter_hit = 3'h5;
 	 8'h40: inter_hit = 3'h6;
 	 8'h80: inter_hit = 3'h7;
@@ -254,4 +254,4 @@ always_comb begin : state_control_signals
 
 end : state_control_signals
 
-endmodule : cache_control
+endmodule : L2cache_control

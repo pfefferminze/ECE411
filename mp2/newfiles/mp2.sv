@@ -31,7 +31,7 @@ cpu core(
 );
 
 
-cache memory(
+cache_global memory(
 	.clk(clk),
 	.mem_resp(mem_resp),
 	.mem_rdata(mem_rdata),

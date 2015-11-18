@@ -19,12 +19,11 @@
 import cache_types::*;
 import lc3b_types::*;
 
-module L2cache_datapath (
+module L2big_datapath (
 					   //signals between cache and cpu datapath
 					   input 			  lc3b_word mem_address,
-					   input 			  lc3b_word mem_wdata,
-					   input [1:0] 		  mem_byte_enable,
-					   output 			  lc3b_word mem_rdata,
+					   input 			  cache_line mem_wdata,
+					   output 			  cache_line mem_rdata,
 					   output 			  lc3b_word pmem_address,
 
 					   //signals between cache and physical memory
@@ -43,10 +42,6 @@ module L2cache_datapath (
 					   output logic [7:0] Valid,
 					   output logic [7:0] Hit, //logic determining if there was a hit
 					   output logic [7:0] Dirty
-//					   output 			  cache_index index_out,
-//					   output 			  cache_tag tag_out,
-//					   output 			  cache_tag [1:0] tags,
-//					   output 			  cache_offset offset_out
 					   );
 
 //#############################################################################################################
@@ -126,10 +121,9 @@ end : inter_hit_assignment
 
 /*ways
 */ 
-cache_way way0    (
+big_way way0    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -152,10 +146,9 @@ cache_way way0    (
 				   .index(index)
  				   );
 
-cache_way way1    (
+big_way way1    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -178,10 +171,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way2    (
+big_way way2    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -204,10 +196,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way3    (
+big_way way3    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -230,10 +221,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way4    (
+big_way way4    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -256,10 +246,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way5    (
+big_way way5    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -282,10 +271,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way6    (
+big_way way6    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -308,10 +296,9 @@ cache_way way1    (
 				   .index(index)
 				   );
 
-   cache_way way7    (
+big_way way7    (
 				   //signals between cache and cpu datapath
 				   .mem_wdata(mem_wdata),
-				   .mem_byte_enable(mem_byte_enable),
 				  
 				  //signals between cache and physical memory
 				   .line_in(pmem_rdata),
@@ -356,7 +343,6 @@ mux8 #(.width(12)) basemux
 	.sel(basemux_sel),
 	.i(basemux_out)
 );
-
    
 mux8 #(.width(128)) dataoutmux
 (
@@ -369,22 +355,9 @@ mux8 #(.width(128)) dataoutmux
 	.g(line_out[6]),
 	.h(line_out[7]),
 	.sel(dataoutmux_sel),
-	.i(dataoutmux_out)
-);
-
-mux8  wordselectmux
-(
-	.a(dataoutmux_out[0]),
-	.b(dataoutmux_out[1]),
-	.c(dataoutmux_out[2]),
-	.d(dataoutmux_out[3]),
-	.e(dataoutmux_out[4]),
-	.f(dataoutmux_out[5]),
-	.g(dataoutmux_out[6]),
-	.h(dataoutmux_out[7]),
-	.sel(offset),
 	.i(mem_rdata)
 );
+
 
 mux8 #(.width(128)) pmem_wdatamux
 (
