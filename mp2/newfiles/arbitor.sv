@@ -117,7 +117,7 @@ always_comb begin : state_actions
    i_resp = 0;
    d_resp = 0;
 //   L2_addr = 16'h0;
-   L2_wdata = 16'h0;
+   L2_wdata = d_wdata;
 
 	case(state)
 		READY: begin
@@ -130,12 +130,12 @@ always_comb begin : state_actions
 			if(req_type == DATA) begin
 				d_resp = L2_resp;
 //				L2_addr = d_raddr;
-				L2_wdata = d_rdata;
+				L2_wdata = d_wdata;
 			end
 			else begin
 				i_resp = L2_resp;
 //				L2_addr = i_raddr;
-				L2_wdata = i_rdata;
+				L2_wdata = i_wdata;
 			end
 		end
 		L2_READ: begin
