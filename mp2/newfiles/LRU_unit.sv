@@ -74,13 +74,13 @@ end
 
 always_ff @(posedge clk) begin
     if (mem_resp == 1) begin
-	   if (last_place == 4'h8 && data[index][7] == 3'bxxx ) begin  //current is not actually in the history => LRU_unit is not full for this index, so move everything down
-		  for (int i = 7; i > 0; i--)begin
-			 data[index][i] <= data[index][i-1];
-		  end
-		  data[index][0] <= current[2:0];
-	   end
-	   else if (last_place == 4'h8) begin
+//	   if (last_place == 4'h8 && data[index][7] == 3'bxxx ) begin  //current is not actually in the history => LRU_unit is not full for this index, so move everything down
+//		  for (int i = 7; i > 0; i--)begin
+//			 data[index][i] <= data[index][i-1];
+//		  end
+//		  data[index][0] <= current[2:0];
+//	   end
+/*	   else*/ if (last_place == 4'h8) begin
 		  data = data;
 	   end
 	   else begin                          //last_place is valid,so we need to move it to the top and move the ones more recent down
