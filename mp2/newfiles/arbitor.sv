@@ -1,3 +1,4 @@
+
 module arbitor(
 	input logic 		 clk,
 				 i_mem_write,		//
@@ -37,6 +38,10 @@ enum {
 	INST,
 	DATA
 } req_type, next_req_type;
+
+   logic reg_load;
+logic [15:0]  address_reg_in,address_reg_out;
+   
 
 always_ff @ (posedge clk) begin
 	state <= next_state;
@@ -111,38 +116,57 @@ always_comb begin : state_actions
    L2_write = 0;
    i_resp = 0;
    d_resp = 0;
-   L2_addr = 16'h0;
+//   L2_addr = 16'h0;
    L2_wdata = 16'h0;
 
 	case(state)
 		READY: begin
 			/* WAIT */
+		   reg_load = 1'b1;
 		end
 		WB: begin
 		   L2_write = 1;
+		   reg_load = 1'b0;			   
 			if(req_type == DATA) begin
 				d_resp = L2_resp;
-				L2_addr = d_raddr;
+//				L2_addr = d_raddr;
 				L2_wdata = d_rdata;
 			end
 			else begin
 				i_resp = L2_resp;
-				L2_addr = i_raddr;
+//				L2_addr = i_raddr;
 				L2_wdata = i_rdata;
 			end
 		end
 		L2_READ: begin
 		   L2_read = 1;
+		   reg_load = 1'b0;			   		   
 		   if(req_type == DATA) begin
 			  d_resp = L2_resp;
-			  L2_addr = d_raddr;
+//			  L2_addr = d_raddr;
 	           end
 		   else begin
                           i_resp = L2_resp;
-                          L2_addr = i_raddr;
+//                          L2_addr = i_raddr;
                    end
 	        end
 	endcase
 end : state_actions
 
+
+   assign address_reg_in = (req_type == DATA)? d_raddr:i_raddr;
+   assign L2_addr = address_reg_out;
+   
+   register address_register(
+//    input 
+							  .clk(clk),
+//    input 
+							  .load(reg_load),
+//    input [width-1:0] 
+							  .in(address_reg_in),
+//    output logic [width-1:0] 
+							  .out(address_reg_out)
+);
+
+   
 endmodule

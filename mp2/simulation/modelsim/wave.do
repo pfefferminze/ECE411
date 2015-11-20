@@ -1,6 +1,7 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate -label pc -radix hexadecimal /mp2_tb/dut/core/data_path/pc/data
+add wave -noupdate -label {cpu state} /mp2_tb/dut/core/control_unit/state
 add wave -noupdate -label registers -radix hexadecimal -childformat {{{/mp2_tb/dut/core/data_path/rfile/data[7]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[6]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[5]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[4]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[3]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[2]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[1]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[0]} -radix hexadecimal}} -expand -subitemconfig {{/mp2_tb/dut/core/data_path/rfile/data[7]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[6]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[5]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[4]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[3]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[2]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[1]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[0]} {-height 15 -radix hexadecimal}} /mp2_tb/dut/core/data_path/rfile/data
 add wave -noupdate -label clk -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/clk
 add wave -noupdate -label pc -radix hexadecimal /mp2_tb/dut/core/data_path/pc/data
@@ -53,7 +54,7 @@ add wave -noupdate -label {cpu mem_wdata} -radix hexadecimal /mp2_tb/dut/core/da
 add wave -noupdate -label {cpu mem_read} -radix hexadecimal /mp2_tb/dut/core/mem_read
 add wave -noupdate -label {cpu mem_write} -radix hexadecimal /mp2_tb/dut/core/mem_write
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {761814 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1117659 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 198
 configure wave -valuecolwidth 281
@@ -69,4 +70,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {340859 ps} {1034692 ps}
+WaveRestoreZoom {0 ps} {693833 ps}
