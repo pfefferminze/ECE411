@@ -47,7 +47,7 @@ module L1_caches (
    logic [15:0] 	i_raddr;
    logic [15:0] 	d_raddr;
 
-   assign i_wdata = 128'h0;
+//   assign i_wdata = 128'h0;
    
    cache icache(
 				.clk,
@@ -77,9 +77,9 @@ module L1_caches (
 				 .mem_rdata(dcache_rdata),
 				 .mem_resp(dcache_mresp),
 	
-				 .pmem_rdata(d_rdata),//input
+				 .pmem_rdata(d_rdata),		//input
 				 .pmem_resp(d_resp),
-				 .pmem_wdata(d_wdata),//output
+				 .pmem_wdata(d_wdata),		//output
 				 .pmem_address(d_raddr),
 				 .pmem_read(d_mem_read),
 				 .pmem_write(d_mem_write)
@@ -112,7 +112,8 @@ module L1_caches (
 				   .d_resp,
 				   .L2_wdata,
 				   .d_wdata,
-				   .L2_addr
+				   .L2_addr,
+                                   .i_wdata
 				   );
 
  

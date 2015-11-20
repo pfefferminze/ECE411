@@ -1,30 +1,29 @@
 module arbitor(
 	input logic 		 clk,
-						 i_mem_write,
-						 d_mem_write,
-						 i_mem_read,
-						 d_mem_read,
-						 L2_resp,
+				 i_mem_write,		//
+				 d_mem_write,		//
+				 i_mem_read,		//
+				 d_mem_read,		//
+				 L2_resp,		//
 						
-	input logic [127:0]  L2_rdata,
-						 d_wdata, //data from dcache to L2 cache
+	input logic [127:0]      L2_rdata,              //input from L2
+				 d_wdata, //data from dcache to L2 cache
 			   
-	output logic [127:0] i_rdata,
-						 d_rdata,
+	output logic [127:0]     i_rdata,               //output to icache
+				 d_rdata,		//output to dcache
 						
-	input logic [15:0] 	 i_raddr,
-						 d_raddr,
+	input logic [15:0] 	 i_raddr,		//
+				 d_raddr,		//
 						
-	output logic 		 L2_read,
-						 L2_write,
-						 i_resp,
-						 d_resp,
+	output logic 		 L2_read,		//
+				 L2_write,		//
+				 i_resp,		//
+				 d_resp,		//
 	
-	output logic [127:0] L2_wdata,
+	output logic [127:0] 	L2_wdata,		//from L1 to L2
 						 
-						 i_wdata, //data from icache to L2 cache
-	output logic [15:0]  L2_addr //address to send to L2
-						
+	input logic [127:0]     i_wdata, 		//data from icache to L2 cache
+	output logic [15:0]  	L2_addr 		//address to send to L2
 );
 
 enum {
@@ -43,7 +42,8 @@ always_ff @ (posedge clk) begin
 	state <= next_state;
 end
 
-   assign d_wdata = L2_rdata;
+   assign i_rdata = L2_rdata;
+   assign d_rdata = L2_rdata;
 
 always_comb begin : next_state_logic
    req_type = NONE;
@@ -136,8 +136,12 @@ always_comb begin : state_actions
 		   if(req_type == DATA) begin
 			  d_resp = L2_resp;
 			  L2_addr = d_raddr;
-			end
-		end
+	           end
+		   else begin
+                          i_resp = L2_resp;
+                          L2_addr = i_raddr;
+                   end
+	        end
 	endcase
 end : state_actions
 
