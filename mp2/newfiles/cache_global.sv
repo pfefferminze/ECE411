@@ -74,7 +74,41 @@ L1_caches level_one(
 					.L2_wdata(bigcache_wdata)
 ); 
 
+victim_cache Vicky
+(
+                    /*input*/ 		                
+                   .clk(clk),
 
+                    //signals between the bigcache and the littlecache
+                    /* input lc3b_word*/
+                   .mem_address(bigcache_address),
+                    /* input cache_line */
+                   .mem_wdata(bigcache_wdata),
+                    /* input*/
+                   .mem_read(bigcache_read),
+                   /* input*/
+                   .mem_write(bigcache_write),
+                   /* output cache_line*/ 
+                   .mem_rdata(bigcache_rdata),
+                   /* output logic */
+                   .mem_resp(bigcache_resp),
+
+	               //signals between the cache and the main memory
+                   /* input cache_line*/ 
+                   .pmem_rdata(pmem_rdata),
+                   /* input */
+                   .pmem_resp(pmem_resp),
+                   /* output cache_line*/ 
+                   .pmem_wdata(pmem_wdata),
+                   /* output lc3b_word */
+                   .pmem_address(pmem_address),
+                    /* output logic */
+                   .pmem_read(pmem_read),
+                    /* output logic */
+                   .pmem_write(pmem_write)
+);
+
+/*
 bigcache level_two(
 				   //	input clk,
 				   .clk(clk),
@@ -105,44 +139,6 @@ bigcache level_two(
 				   .pmem_read(pmem_read),
 				   //	output logic 
 				   .pmem_write(pmem_write)
-);
-
-
-/*
-cache level_one
-(
-//	input 
-    .clk(clk),
-
-	//signals between the datapath and the cache
-//	input lc3b_word
-    .mem_address(mem_address),
-//	input lc3b_word
-    .mem_wdata(mem_wdata),
-//	input
-    .mem_read(mem_read),
-//	input
-    .mem_write(mem_write),
-//	input [1:0] 
-    .mem_byte_enable(mem_byte_enable),
-//	output lc3b_word 
-    .mem_rdata(mem_rdata),
-//	output logic
-    .mem_resp(mem_resp),
-
-	//signals between the cache and the main memory
-//	input cache_line 
-    .pmem_rdata(bigcache_rdata),
-//	input
-    .pmem_resp(bigcache_resp),
-//	output cache_line
-    .pmem_wdata(bigcache_wdata),
-//	output lc3b_word
-    .pmem_address(bigcache_address),
-//	output logic
-    .pmem_read(bigcache_read),
-//	output logic
-    .pmem_write(bigcache_write)
 );
 */
 

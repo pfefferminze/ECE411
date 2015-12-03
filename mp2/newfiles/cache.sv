@@ -136,5 +136,4 @@ cache_control control_unit(
 //	input [1:0] 
 						   .Dirty(dirty)
 );
-
 endmodule : cache

@@ -8,18 +8,18 @@
 //#                                                                  #
 //####################################################################
 import cache_types::*;
+import lc3b_types::*;
 
-module cache
+module victim_cache
 (
 	input clk,
 
-	//signals between the datapath and the cache
+	//signals between the bigcache and the littlecache
 	input lc3b_word mem_address,
-	input lc3b_word mem_wdata,
+	input cache_line mem_wdata,
 	input mem_read,
 	input mem_write,
-	input [1:0] mem_byte_enable,
-	output lc3b_word mem_rdata,
+	output cache_line mem_rdata,
 	output logic mem_resp,
 
 	//signals between the cache and the main memory
@@ -32,29 +32,21 @@ module cache
 );
 
 logic valid_data,dirty_data;
-logic pmem_wdatamux_sel,datainmux1_sel, datainmux0_sel;
-logic [1:0] write, valid, dirty, hit;
-logic 	basemux_sel;
+logic [2:0] pmem_wdatamux_sel;
+logic [7:0] write, valid, dirty, hit,datainmux_sel;
+logic [2:0]	basemux_sel;
 logic pmem_address_mux_sel;
    
-   
-cache_tag tag;
-cache_tag [1:0] tags;
-cache_index index;
 cache_offset offset;
 
 
-
-
-cache_datapath datapath_unit (
+victim_datapath datapath_unit (
 					   //signals between cache and cpu datapath
 //					   input lc3b_word
 					   .mem_address(mem_address),
-//					   input 			  lc3b_word
+//					   input 			  cache_line
                        . mem_wdata(mem_wdata),
-					   //input [1:0] 		  
-					   .mem_byte_enable(mem_byte_enable),
-//					   output 			  lc3b_word
+//					   output 			  cache_line
 					   .mem_rdata(mem_rdata),
 //					   output 			  lc3b_word
 					   .pmem_address(pmem_address),
@@ -86,10 +78,10 @@ cache_datapath datapath_unit (
 					   .Hit(hit), //logic determining if there was a hit
 //					   output logic [1:0] 
 					   .Dirty(dirty),
+					   .datainmux_sel(datainmux_sel)
 					   );
 
-
-cache_control control_unit(
+victim_control control_unit(
 	//signals between cache and cpu datapath
 //	input 
 						   .mem_read(mem_read),
@@ -120,13 +112,11 @@ cache_control control_unit(
 //	output logic [1:0] 
 						   .datainmux_sel(datainmux_sel),	//mux selects
 //    output logic  
-						   .pmem_address_mux_sel(pmem_address_mux),
+						   .pmem_address_mux_sel(pmem_address_mux_sel),
 //    output logic 
 						   .basemux_sel(basemux_sel),
 //	input cache_tag 
-						   .tag(tag),
-//	input cache_index 
-						   .index(index),
+//						   .tag(tag),
 //	input [1:0] 
 						   .Valid(valid),
 //	input [1:0] 
@@ -135,5 +125,4 @@ cache_control control_unit(
 						   .Dirty(dirty)
 );
 
-//assign pmem_address = mem_address;
-endmodule : cache
+endmodule : victim_cache

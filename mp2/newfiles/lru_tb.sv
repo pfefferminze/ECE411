@@ -17,7 +17,7 @@ module lru_tb;
    initial clk = 0;
    always #1 clk = !clk;
    
-   LRU_unit dut(.*);
+   victim_lru dut(.*);
 
    initial begin : waveform_generation
 	  hit = 8'h1;
