@@ -18,43 +18,46 @@
 import lc3b_types::*;
 import cache_types::*;
 
-module victim_lru 
-(
-     input 				mem_resp,             //acts as write for the flip flop, since we update LRU when we actually use the data
-     input [3:0]        hit,
-     input 				cache_index index,
-	 input 				clk,
-	 output logic [1:0] out
+module victim_lru (
+				   input 				   mem_resp, //acts as write for the flip flop, since we update LRU when we actually use the data
+				   input [3:0] 			   hit,
+				   input 				      clk,
+				   output logic [1:0] 	   out,
+				   output logic [3:0][1:0] internals
 );
 
    logic [2:0]			current;
    logic [2:0] 			last_place;
-   logic [3:0] [2:0] 	data  /*synthesis ramstyle = "logic" */;
+   logic [3:0] [1:0] 	data  /*synthesis ramstyle = "logic" */;
    logic [2:0] 			greatest_valid_place;
 			
    
 always_comb begin : current_assignment
    case(hit)
-	 4'h1: current = 4'h0;
-	 4'h2: current = 4'h1;
-	 4'h4: current = 4'h2;
-	 4'h8: current = 4'h3;
+	 4'h1: current = 3'h0;
+	 4'h2: current = 3'h1;
+	 4'h4: current = 3'h2;
+	 4'h8: current = 3'h3;
 	 default: current = 3'h4;
    endcase // case (hit)
 end : current_assignment
 
+assign internals = data;
+   
 always_comb begin : last_place_assignment
    if(current[2]!=1'b1)begin
-	  if (data[0] == current) last_place = 3'h0;
-	  else if (data[1] == current[2:0]) last_place = 3'h1;
-	  else if (data[2] == current[2:0]) last_place = 3'h2;
-	  else if (data[3] == current[2:0]) last_place = 3'h3;
-	  else last_place = 3'h4;
+	  if (data[0][1:0] == current) last_place = 3'h0;
+	  else if (data[1][1:0] == current[1:0]) last_place = 3'h1;
+	  else if (data[2][1:0] == current[1:0]) last_place = 3'h2;
+	  else last_place = 3'h3;
    end
    else last_place = 3'h4;
 end : last_place_assignment
-//assign out = data[3][2:0];
 
+
+assign out = data[3][1:0];
+
+/*
 always_comb begin : greatest_valid_place_assignment
    if (data[3] != 3'bzzz)
 	 greatest_valid_place = 3'h3;
@@ -70,16 +73,16 @@ end : greatest_valid_place_assignment
 
 always_comb begin : output_select
    if (greatest_valid_place[2] == 1'b1)
-	 out = 3'bzzz;
+	 out = 2'bzz;
    else
 	 out = data[greatest_valid_place[1:0]];
 end : output_select
-   
+*/   
 
 /* Initialize array */
 initial begin
    for (int i = 0; i < 3; i++) begin
-	  data[i] = 3'bzzz;
+	  data[i] = 2'bzz;
    end
 end
 
@@ -95,7 +98,7 @@ always_ff @(posedge clk) begin
 			   continue;
 			 data[i] <= data[i-1];
 		  end
-		  data[0] <= current[2:0];
+		  data[0] <= current[1:0];
 	   end
 	end // if (mem_resp == 1)
    	   

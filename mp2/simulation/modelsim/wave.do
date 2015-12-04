@@ -5,7 +5,7 @@ add wave -noupdate -label pc -radix hexadecimal /mp2_tb/dut/core/data_path/pc/da
 add wave -noupdate -label {cpu state} /mp2_tb/dut/core/control_unit/state
 add wave -noupdate -label registers -radix hexadecimal -childformat {{{/mp2_tb/dut/core/data_path/rfile/data[7]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[6]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[5]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[4]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[3]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[2]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[1]} -radix hexadecimal} {{/mp2_tb/dut/core/data_path/rfile/data[0]} -radix hexadecimal}} -expand -subitemconfig {{/mp2_tb/dut/core/data_path/rfile/data[7]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[6]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[5]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[4]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[3]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[2]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[1]} {-height 15 -radix hexadecimal} {/mp2_tb/dut/core/data_path/rfile/data[0]} {-height 15 -radix hexadecimal}} /mp2_tb/dut/core/data_path/rfile/data
 add wave -noupdate -label {cpu mem_address} -radix hexadecimal /mp2_tb/dut/core/data_path/mem_address
-add wave -noupdate -format Event -label pmem_resp -radix hexadecimal /mp2_tb/pmem_resp
+add wave -noupdate -format Literal -label pmem_resp -radix hexadecimal /mp2_tb/pmem_resp
 add wave -noupdate -label L2_resp -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/L2_resp
 add wave -noupdate -label d_resp -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/d_resp
 add wave -noupdate -label i_resp -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/i_resp
@@ -21,12 +21,8 @@ add wave -noupdate -label cpu_state -radix hexadecimal /mp2_tb/dut/core/control_
 add wave -noupdate -label i_mem_write -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/i_mem_write
 add wave -noupdate -label state -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/state
 add wave -noupdate -label dcache_pmem_write -radix hexadecimal /mp2_tb/dut/memory/level_one/dcache/pmem_write
-add wave -noupdate /mp2_tb/dut/memory/level_two/mem_write
 add wave -noupdate -label L2_rdata -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/L2_rdata
-add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/level_two/mem_wdata
 add wave -noupdate -label d_wdata -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/d_wdata
-add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/level_two/mem_read
-add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/level_two/mem_resp
 add wave -noupdate -label d_mem_write -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/d_mem_write
 add wave -noupdate -label dcache_mem_write -radix hexadecimal /mp2_tb/dut/memory/level_one/dcache/mem_write
 add wave -noupdate -label i_mem_read -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/i_mem_read
@@ -42,7 +38,6 @@ add wave -noupdate -label L2_wdata -radix hexadecimal /mp2_tb/dut/memory/level_o
 add wave -noupdate -label L2_addr -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/L2_addr
 add wave -noupdate -label next_state -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/next_state
 add wave -noupdate -label req_type -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/req_type
-add wave -noupdate -label next_req_type -radix hexadecimal /mp2_tb/dut/memory/level_one/arbitor_unit/next_req_type
 add wave -noupdate -label dcache_mem_address -radix hexadecimal /mp2_tb/dut/memory/level_one/dcache/mem_address
 add wave -noupdate -label dcache_mem_wdata -radix hexadecimal /mp2_tb/dut/memory/level_one/dcache/mem_wdata
 add wave -noupdate -label dcache_mem_byte_enable -radix hexadecimal /mp2_tb/dut/memory/level_one/dcache/mem_byte_enable
@@ -57,6 +52,65 @@ add wave -noupdate -label {cpu mem_rdata} -radix hexadecimal /mp2_tb/dut/core/da
 add wave -noupdate -label {cpu mem_wdata} -radix hexadecimal /mp2_tb/dut/core/data_path/mem_wdata
 add wave -noupdate -label {cpu mem_read} -radix hexadecimal /mp2_tb/dut/core/mem_read
 add wave -noupdate -label {cpu mem_write} -radix hexadecimal /mp2_tb/dut/core/mem_write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/mem_address
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/mem_wdata
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/mem_rdata
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_address
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_rdata
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_wdata
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/clk
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/valid_data
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/dirty_data
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_wdatamux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/basemux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_address_mux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/datainmux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/dataoutmux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/Valid
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/Hit
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/Dirty
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/offset
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/tag
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/dataoutmux_out
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/line_out
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/isHit
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/isValid
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/isDirty
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/inter_hit
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/pmem_base
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/basemux_out
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/datapath_unit/wb_address
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/mem_read
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/mem_write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/mem_resp
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/pmem_read
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/pmem_write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/pmem_resp
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/clk
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/valid_data
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/dirty_data
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/pmem_wdatamux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/datainmux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/pmem_address_mux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/basemux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/dataoutmux_sel
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/Valid
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/Hit
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/Dirty
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/state
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/next_state
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/lru_out
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/valid_and_dirty
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/inter_hit
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/recipient
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/internals
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/lru_is_populated
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/next_to_write
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/isDirty
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/write_back_to_read_flag
+add wave -noupdate -radix hexadecimal /mp2_tb/dut/memory/Vicky/control_unit/write_back_state_flag
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {5375000 ps} 0}
 quietly wave cursor active 1
@@ -74,4 +128,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {5197350 ps} {5647596 ps}
+WaveRestoreZoom {19572267 ps} {20022513 ps}

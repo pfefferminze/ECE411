@@ -65,6 +65,7 @@ set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
 set_global_assignment -name NUM_PARALLEL_PROCESSORS 2
 set_global_assignment -name VERILOG_INPUT_VERSION SYSTEMVERILOG_2005
 set_global_assignment -name VERILOG_SHOW_LMF_MAPPING_MESSAGES OFF
+set_global_assignment -name SYSTEMVERILOG_FILE newfiles/victim_array.sv
 set_global_assignment -name SYSTEMVERILOG_FILE newfiles/victim_way.sv
 set_global_assignment -name SYSTEMVERILOG_FILE newfiles/victim_lru.sv
 set_global_assignment -name SYSTEMVERILOG_FILE newfiles/victim_datapath.sv

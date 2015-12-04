@@ -32,8 +32,8 @@ module victim_cache
 );
 
 logic valid_data,dirty_data;
-logic [2:0] pmem_wdatamux_sel;
-logic [7:0] write, valid, dirty, hit,datainmux_sel;
+logic [2:0] pmem_wdatamux_sel, dataoutmux_sel;
+logic [3:0] write, valid, dirty, hit,datainmux_sel;
 logic [2:0]	basemux_sel;
 logic pmem_address_mux_sel;
    
@@ -72,13 +72,14 @@ victim_datapath datapath_unit (
 					   .basemux_sel(basemux_sel),
 //					   input 			  
 					   .pmem_address_mux_sel(pmem_address_mux_sel),
+					   .datainmux_sel(datainmux_sel),
+					   .dataoutmux_sel(dataoutmux_sel),
 //					   output logic [1:0] 
 					   .Valid(valid),
 //					   output logic [1:0] 
 					   .Hit(hit), //logic determining if there was a hit
 //					   output logic [1:0] 
-					   .Dirty(dirty),
-					   .datainmux_sel(datainmux_sel)
+					   .Dirty(dirty)
 					   );
 
 victim_control control_unit(
@@ -116,7 +117,7 @@ victim_control control_unit(
 //    output logic 
 						   .basemux_sel(basemux_sel),
 //	input cache_tag 
-//						   .tag(tag),
+                           .dataoutmux_sel(dataoutmux_sel),
 //	input [1:0] 
 						   .Valid(valid),
 //	input [1:0] 

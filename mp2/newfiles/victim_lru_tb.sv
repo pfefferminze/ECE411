@@ -6,7 +6,7 @@ module victim_lru_tb;
 
    timeunit 1ns;
    timeprecision 1ps;
-
+   logic [1:0] out;
    logic [3:0] hit;
    logic 	   mem_resp;
    logic [1:0] l_r_u;

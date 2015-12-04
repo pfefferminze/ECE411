@@ -14,6 +14,18 @@
 //#     controls the datapath module for the LC3B L2cache            #
 //#     instantiate both in L2cache.sv and connect the inputs/outputs#
 //#                                                                  #
+//#   Differences from regular bigcache                              #
+//#     We are only using a 4 way fully associative cache now        #
+//#     There are several more states now, to handle reads and       #
+//#        write requests that occur when we are writing back        #
+//#        from the buffer.                                          #
+//#     The LRU had to output all of it's data so we can see         #
+//#        what order to write the data back in                      #
+//#     The Hit signal going to the LRU has to change.  Originally   #
+//#        it was just the vector of hits, but since we are writing  #
+//#        to the way without worrying about having a hit, the       #
+//#        Hit vector doesn't update until after the LRU updates,    #
+//#        leaving the LRU unchanged when we write to the buffer.    #
 //####################################################################
 
 import cache_types::*;
@@ -35,16 +47,16 @@ module victim_control
 	input 			   clk,
 	output logic 	   valid_data,
 	output logic 	   dirty_data,
-	output logic [7:0] write,
+	output logic [3:0] write,
 	output logic [2:0] pmem_wdatamux_sel, //mux selects
-	output logic [7:0] datainmux_sel, //mux selects
+	output logic [3:0] datainmux_sel, //mux selects
     output logic 	   pmem_address_mux_sel,
-    output logic [2:0] basemux_sel,
+    output logic [1:0] basemux_sel,
 	output logic [2:0] dataoutmux_sel, //select line from dataoutmux -- controlled by control unit
 //	input cache_tag tag,
-	input [7:0] 	   Valid,
-	input [7:0] 	   Hit, //logic determining if there was a hit
-	input [7:0] 	   Dirty
+	input [3:0] 	   Valid,
+	input [3:0] 	   Hit, //logic determining if there was a hit
+	input [3:0] 	   Dirty
 );
 
 //#############################################################################################################
@@ -72,7 +84,7 @@ module victim_control
    logic 			   write_back_to_read_flag;
    logic               write_back_state_flag;        /*when HIGH tells control that it came from WRITE_BACK, LOW means WRITE_BACK_2*/
                                                      /*for use with flip flop so control can flip it on and off*/
- 			   
+   logic [3:0] 		   lru_hit;
    
 //#############################################################################################################
 //#############################################################################################################
@@ -121,16 +133,16 @@ end : assign_write_back_to_read_flag
 always_ff@(posedge clk) begin : assigning_next_to_write
    if(lru_is_populated && next_state == WRITE_BACK_2 && state != next_state)begin /*going to WRITE_BACK_2 when lru is full*/
 	  if(valid_and_dirty[internals[3]]==1'b1)begin
-		 next_to_write <= 2'b11;
+		 next_to_write <= internals[3];
 	  end
 	  else if(valid_and_dirty[internals[2]]==1'b1)begin
-		 next_to_write <= 2'b10;
+		 next_to_write <= internals[2];
 	  end
 	  if(valid_and_dirty[internals[1]]==1'b1)begin
-		 next_to_write <= 2'b01;
+		 next_to_write <= internals[1];
 	  end
 	  else/* if(valid_and_dirty[internals[0]]==1'b1)*/begin
-		 next_to_write <= 2'b00;
+		 next_to_write <= internals[0];
 	  end
    end // if (lru_is_populated)
    else if(next_state == WRITE_BACK_2 && next_state != state)begin /*going to WRITE_BACK_2 when lru is not full*/
@@ -150,11 +162,11 @@ end : assigning_next_to_write
 /*converting hit array to unsigned int format for use as array index or mux select signal*/   
 always_comb begin : inter_hit_assignment
    case(Hit)
-	 4'h1: inter_hit = 3'h0;
-	 4'h2: inter_hit = 3'h1;
-	 4'h4: inter_hit = 3'h2;
-	 4'h8: inter_hit = 3'h3;
-	 default: inter_hit = 3'h0;
+	 4'h1: inter_hit = 2'h0;
+	 4'h2: inter_hit = 2'h1;
+	 4'h4: inter_hit = 2'h2;
+	 4'h8: inter_hit = 2'h3;
+	 default: inter_hit = 2'h0;
    endcase // case (hit)
 end : inter_hit_assignment
       
@@ -183,6 +195,22 @@ always_comb begin : recipient_determination
    end
 end : recipient_determination
 
+
+always_comb begin : lru_hit_assignment     //controls the signal going to LRU so we can modify it on writes as well as read hits(writes don't have hits)
+   if(mem_write)begin
+	  if(recipient == 2'h0)
+		lru_hit = 4'b0001;
+	  else if (recipient == 2'h1)
+		lru_hit = 4'b0010;
+	  else if (recipient == 2'h2)
+		lru_hit = 4'b0100;		
+	  else //recipient == 2'h3
+		lru_hit = 4'b1000;			  
+   end
+   else
+	 lru_hit = Hit;
+end : lru_hit_assignment
+   
 //#############################################################################################################
 //#############################################################################################################
 //#############################################################################################################
@@ -196,10 +224,9 @@ end : recipient_determination
 //#############################################################################################################
 //#############################################################################################################
 
-victim_lru lru
-(
+victim_lru lru_vic(
     .clk(clk),
-    .hit(Hit),
+    .hit(lru_hit),
     .mem_resp(mem_resp),
     .out(lru_out),
     .internals(internals)
@@ -277,7 +304,7 @@ always_comb begin : next_state_logic
 		else
 		  next_state = WRITE_BACK_2;
 	 end
-	 FINISH_WRITE_BACK:begin                    /*state for writing a zero bit into the dirty array for the way just written, so we know we can use it*/
+	 FINISH_WRITE_BACK:begin                    /*state for writing a znero bit into the dirty array for the way just written, so we know we can use it*/
 		next_state = READY;		                /*we use this state to make sure that we don't accidentally write to the way while writing it back*/
 	 end
 	 GET_MEM:begin                              /*we are requesting data from the physical memory to forward it on to the L2 cache*/
@@ -305,6 +332,10 @@ end : next_state_logic
 //#############################################################################################################
 //#############################################################################################################
 
+//it looks like we are forgetting to add ways to the LRU for writes to the victim cache from L2 sometimes.  at 5600ns it happens
+//it looks like this is happening because hit is actually adjusted a cycle later, in the LRU's reference frame.
+//we may have to input recipient into the victim LRU to make sure we handle one cycle writes correctly.
+   
 always_comb begin : state_control_signals
 	mem_resp = 1'b0;
 	pmem_read = 1'b0;
@@ -349,6 +380,7 @@ always_comb begin : state_control_signals
 	  end
 
 	  WRITE_BACK_2: begin                   /*write back based on 'next_to_write' instead of recipient*/
+		 basemux_sel = next_to_write;
 		 pmem_wdatamux_sel = next_to_write;
 		 pmem_write = 1'b1;
 		 pmem_address_mux_sel = 1'b1;

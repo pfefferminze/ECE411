@@ -28,6 +28,13 @@ module cache_global(
    cache_line bigcache_wdata;
    logic 		 bigcache_resp;
    cache_line bigcache_rdata;
+
+   cache_line L2_pmem_rdata;
+   cache_line L2_pmem_wdata;
+   logic 		 L2_pmem_resp;
+   logic 		 L2_pmem_read;
+   logic 		 L2_pmem_write;
+   lc3b_word L2_pmem_address;
    
 
  		 
@@ -76,39 +83,39 @@ L1_caches level_one(
 
 victim_cache Vicky
 (
-                    /*input*/ 		                
+                 //input              
                    .clk(clk),
 
-                    //signals between the bigcache and the littlecache
-                    /* input lc3b_word*/
-                   .mem_address(bigcache_address),
-                    /* input cache_line */
-                   .mem_wdata(bigcache_wdata),
-                    /* input*/
-                   .mem_read(bigcache_read),
-                   /* input*/
-                   .mem_write(bigcache_write),
-                   /* output cache_line*/ 
-                   .mem_rdata(bigcache_rdata),
-                   /* output logic */
-                   .mem_resp(bigcache_resp),
+                    //signals between the victim cache and the bigcache
+                    // input lc3b_word 
+                   .mem_address(L2_pmem_address),
+                    // input cache_line  
+                   .mem_wdata(L2_pmem_wdata),
+                    // input 
+                   .mem_read(L2_pmem_read),
+                   // input 
+                   .mem_write(L2_pmem_write),
+                   // output cache_line  
+                   .mem_rdata(L2_pmem_rdata),
+                   // output logic  
+                   .mem_resp(L2_pmem_resp),
 
 	               //signals between the cache and the main memory
-                   /* input cache_line*/ 
+                   // input cache_line  
                    .pmem_rdata(pmem_rdata),
-                   /* input */
+                   // input  
                    .pmem_resp(pmem_resp),
-                   /* output cache_line*/ 
+                   // output cache_line  
                    .pmem_wdata(pmem_wdata),
-                   /* output lc3b_word */
+                   // output lc3b_word  
                    .pmem_address(pmem_address),
-                    /* output logic */
+                    // output logic  
                    .pmem_read(pmem_read),
-                    /* output logic */
+                    // output logic  
                    .pmem_write(pmem_write)
 );
+ 
 
-/*
 bigcache level_two(
 				   //	input clk,
 				   .clk(clk),
@@ -128,19 +135,19 @@ bigcache level_two(
 
 //signals between the cache and the main memory
 				   //	input 		 cache_line 
-				   .pmem_rdata(pmem_rdata),
+				   .pmem_rdata(L2_pmem_rdata),
 				   //	input 		 
-				   .pmem_resp(pmem_resp),
+				   .pmem_resp(L2_pmem_resp),
 				   //	output 		 cache_line 
-				   .pmem_wdata(pmem_wdata),
+				   .pmem_wdata(L2_pmem_wdata),
 				   //	output 		 lc3b_word 
-				   .pmem_address(pmem_address),
+				   .pmem_address(L2_pmem_address),
 				   //	output logic 
-				   .pmem_read(pmem_read),
+				   .pmem_read(L2_pmem_read),
 				   //	output logic 
-				   .pmem_write(pmem_write)
+				   .pmem_write(L2_pmem_write)
 );
-*/
+   
 
   
 endmodule // cache_global

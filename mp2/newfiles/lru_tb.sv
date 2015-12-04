@@ -7,17 +7,17 @@ module lru_tb;
    timeunit 1ns;
    timeprecision 1ps;
 
-   cache_index index;
    logic [7:0] hit;
    logic 	   mem_resp;
-   logic [2:0] out;
+   logic [1:0] out;
    logic 	   clk;
-
+   logic [3:0][1:0] internals;
+   
 
    initial clk = 0;
    always #1 clk = !clk;
    
-   victim_lru dut(.*);
+   victim_lru dut(.*,.out(out));
 
    initial begin : waveform_generation
 	  hit = 8'h1;

@@ -41,15 +41,15 @@ module victim_datapath (
 					   input 			  clk,
 					   input 			  valid_data,
 					   input 			  dirty_data,
-					   input [7:0] 		  write,
+					   input [3:0] 		  write,
 					   input [2:0] 		  pmem_wdatamux_sel, //mux selects
 					   input [2:0] 		  basemux_sel,
 					   input 			  pmem_address_mux_sel,
-					   input [7:0] 		  datainmux_sel,
+					   input [3:0] 		  datainmux_sel,
 					   input [2:0] 		  dataoutmux_sel, //select line from dataoutmux -- controlled by control unit
-					   output logic [7:0] Valid,
-					   output logic [7:0] Hit, //logic determining if there was a hit
-					   output logic [7:0] Dirty
+					   output logic [3:0] Valid,
+					   output logic [3:0] Hit, //logic determining if there was a hit
+					   output logic [3:0] Dirty
 					   );
 
 //#############################################################################################################
